@@ -9,7 +9,6 @@ import (
 
 func startRepl(){
   for {
-    
     fmt.Print(">> ")
     sc := bufio.NewScanner(os.Stdin)
     sc.Scan()
@@ -29,10 +28,8 @@ func startRepl(){
       fmt.Println("Invalid command")
       continue
     }
-
     command.callback()
   
-
   }
 }
 
@@ -54,6 +51,16 @@ func getCommands() map[string]cliCommand {
       name: "exit",
       description: "exits pokedex",
       callback: callbackExit,
+    },
+    "map": {
+      name: "map",
+      description: "shows the next 20 locations",
+      callback: callbackMap,
+    },
+    "mapb": {
+     name: "mapb",
+      description: "shows the previous 20 locations",
+      callback: callbackMapB,
     },
   }
 }
