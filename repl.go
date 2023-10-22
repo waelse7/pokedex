@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 )
-
 func startRepl(){
   for {
     fmt.Print(">> ")
@@ -18,9 +17,11 @@ func startRepl(){
     if len(input) == 0 {
       continue
     }
-  
     commandName := input[0]
-    
+    args := []string{}
+    if len(input) > 1 {
+      args = input[1:]
+    }
     commands := getCommands()
     
     command, ok := commands[commandName]
@@ -28,7 +29,7 @@ func startRepl(){
       fmt.Println("Invalid command")
       continue
     }
-    command.callback()
+    command.callback(args...)
   
   }
 }
@@ -36,10 +37,8 @@ func startRepl(){
 type cliCommand struct {
   name string
   description string
-  callback func() error
+  callback func(...string) error
 }
-
-
 func getCommands() map[string]cliCommand {
   return map[string]cliCommand{
     "help": {
@@ -62,6 +61,16 @@ func getCommands() map[string]cliCommand {
       description: "shows the previous 20 locations",
       callback: callbackMapB,
     },
+    "explore": {
+      name: "explore",
+       description: "shows a list of pokemons in an area",
+       callback: callbackExplore,
+     },
+     "catch": {
+      name: "catch",
+       description: "try to catch pokemon",
+       callback: callbackCatch,
+     },
   }
 }
 

@@ -1,26 +1,13 @@
-package infra
+package api
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 )
 
-func MakeApiRequest(urlString, method string, params map[string]string, result interface{}) (interface{}, error){
-  if len(params) > 0 {
-    reqURL, err := url.Parse(urlString)
-    if err != nil {
-      return nil, err  
-    }
-    query := reqURL.Query()
-    for key, val := range params {
-      query.Add(key, val)
-    }
-    reqURL.RawQuery = query.Encode()
-    urlString = reqURL.String()
-  }
+func MakeApiRequest(urlString, method string, result interface{}) (interface{}, error){
 
   client := getHTTPClient()
 
