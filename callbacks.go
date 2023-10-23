@@ -73,6 +73,34 @@ func callbackCatch(args ...string) error{
     if randint < threshhold {
         return fmt.Errorf("failed to catch %s", args[0])
     }
-    fmt.Printf("You cought %s.\n", args[0])
+    fmt.Printf("You caught %s.\n", args[0])
+    SetCaughtPokemon(pokemon)
+    return nil
+}
+func callbackInspect(args ...string) error{
+    if len(args) != 1 {
+        return errors.New("error: wrong number of arguements") 
+    }
+    pokemon, ok := page.caughtPokemon[args[0]]
+    if !ok{
+        fmt.Printf("You have not caught %s yet.\n", args[0])
+    }
+    fmt.Printf("Name: %s.\n", pokemon.Name)
+    fmt.Printf("Height: %v.\n", pokemon.Height)
+    fmt.Printf("Weight: %v.\n", pokemon.Weight)
+    fmt.Println("Stats:")
+    for _, stat := range pokemon.Stats {
+        fmt.Printf("%s : %v.\n", stat.Stat.Name, stat.BaseStat)
+    }
+    for _, typ := range pokemon.Types{
+        fmt.Printf("%s.\n", typ.Type.Name)
+    }
+    return nil
+}
+
+func callbackPokedex(args ...string) error{
+    for _, pokemon := range page.caughtPokemon {
+        fmt.Printf("%s.\n", pokemon.Name)
+    }
     return nil
 }

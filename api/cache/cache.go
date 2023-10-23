@@ -1,6 +1,9 @@
 package cache
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type entry struct {
 	val []byte
@@ -9,18 +12,21 @@ type entry struct {
 
 type Cache struct {
 	cache map[string]entry
-
+	mux *sync.Mutex
 }
 
 func NewCache(interval time.Duration) Cache {
 	c :=  Cache {
 		cache: make(map[string]entry),
+		mux: &sync.Mutex{},
 	}
 	go c.reapLoop(interval)
 	return c
 }
 
 func (c *Cache) Set(key string, val []byte) {
+	c.mux.Lock()
+	defer c.mux.Unlock()
 	c.cache[key] = entry{
 		val: val,
 		timeCached: time.Now().UTC(),
@@ -28,6 +34,8 @@ func (c *Cache) Set(key string, val []byte) {
 }
 
 func (c *Cache) Get(key string) ([]byte, bool){
+	c.mux.Lock()
+	defer c.mux.Unlock()
 	ent, ok := c.cache[key]
 	return ent.val, ok
 }
@@ -39,6 +47,8 @@ func (c *Cache) reapLoop(interval time.Duration){
 	}
 }
 func (c *Cache) reap(interval time.Duration){
+	c.mux.Lock()
+	defer c.mux.Unlock()
 	timeBeforeInterval := time.Now().UTC().Add(-interval)
 	for key, val := range c.cache {
 		if val.timeCached.Before(timeBeforeInterval) {
